@@ -1,10 +1,15 @@
+.DEFAULT_GOAL := all
+
 TOOLCHAIN_PATH = ./toolchain/rpi/bin
 AS = $(TOOLCHAIN_PATH)/arm-none-eabi-as
 CC = $(TOOLCHAIN_PATH)/arm-none-eabi-gcc
 LD = $(TOOLCHAIN_PATH)/arm-none-eabi-ld
+OBJCOPY = $(TOOLCHAIN_PATH)/arm-none-eabi-objcopy
+
+BASE_ADDRESS = 0x00008000
 
 CFLAGS = -O2
-LDFLAGS = -Ttext 0x00008000
+LDFLAGS = -Ttext $(BASE_ADDRESS)
 
 AS_SRC = $(wildcard *.s)
 AS_OBJ = $(AS_SRC:.s=.o)
@@ -20,7 +25,10 @@ C_OBJ = $(C_SRC:.c=.o)
 kernel.elf: $(AS_OBJ) $(C_OBJ)
 	$(LD) $(LDFLAGS) $^ -o $@
 
-all: kernel.elf
+kernel.img:	kernel.elf
+	$(OBJCOPY) $< -O binary $@
+
+all: kernel.img
 
 clean:
-	rm -f *.o kernel.elf
+	rm -f *.o *.elf *.img

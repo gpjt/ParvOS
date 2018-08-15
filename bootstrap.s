@@ -1,4 +1,6 @@
 .global _start
 _start:
     mov sp, #0x0010000
-    b kernel_main
+    bl kernel_main
+hang:
+    b hang
