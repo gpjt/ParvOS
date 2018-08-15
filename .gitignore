@@ -1,2 +1,4 @@
 toolchain/
 *.o
+*.img
+*.elf
