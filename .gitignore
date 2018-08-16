@@ -2,3 +2,4 @@ toolchain/
 *.o
 *.img
 *.elf
+__pycache__
