@@ -6,7 +6,7 @@ CC = $(TOOLCHAIN_PATH)/arm-none-eabi-gcc
 LD = $(TOOLCHAIN_PATH)/arm-none-eabi-ld
 OBJCOPY = $(TOOLCHAIN_PATH)/arm-none-eabi-objcopy
 
-CFLAGS = -O2
+CFLAGS = -O2 -I.
 
 AS_SRC = $(wildcard *.s)
 AS_OBJ = $(AS_SRC:.s=.o)
