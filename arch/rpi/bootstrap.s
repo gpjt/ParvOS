@@ -1,3 +1,5 @@
+.section ".text.boot"
+
 .global _start
 _start:
     mov sp, #0x0010000

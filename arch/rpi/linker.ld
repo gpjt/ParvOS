@@ -5,8 +5,10 @@ MEMORY
 
 SECTIONS
 {
-    .text : { bootstrap.o } > ram
-    .text : { *(.text*) } > ram
+    .text : {
+        KEEP(*(.text.boot))
+        *(.text)
+    } > ram
     .bss : { *(.bss*) } > ram
     .rodata : { *(.rodata*) } > ram
     .data : { *(.data*) } > ram
