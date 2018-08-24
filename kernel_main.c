@@ -7,5 +7,5 @@ void kernel_main(void) {
 
     uart_puts("Initializing interrupts... ");
     initialize_interrupts();
-    uart_puts("done!");
+    uart_puts("done!\n");
 }
