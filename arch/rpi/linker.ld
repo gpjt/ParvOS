@@ -9,7 +9,11 @@ SECTIONS
         KEEP(*(.text.boot))
         *(.text)
     } > ram
+
+    __bss_start = .;
     .bss : { *(.bss*) } > ram
+    __bss_end = .;
+
     .rodata : { *(.rodata*) } > ram
     .data : { *(.data*) } > ram
 }
