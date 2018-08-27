@@ -10,5 +10,5 @@ def start_os():
         "kernel.img"
     )
     return pexpect.spawn(
-        "qemu-system-arm -m 128 -no-reboot -M raspi2 -serial stdio -kernel {image}".format(image=image)
+        "qemu-system-arm -M raspi2 -m 128 -serial mon:stdio -nographic -kernel {image}".format(image=image)
     )
