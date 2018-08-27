@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := all
 
 ARCH = rpi
+CPU = cortex-a7
 
 TOOLCHAIN_PATH = ./toolchain/$(ARCH)/bin
 AS = $(TOOLCHAIN_PATH)/arm-none-eabi-as
@@ -8,7 +9,7 @@ CC = $(TOOLCHAIN_PATH)/arm-none-eabi-gcc
 LD = $(TOOLCHAIN_PATH)/arm-none-eabi-ld
 OBJCOPY = $(TOOLCHAIN_PATH)/arm-none-eabi-objcopy
 
-CFLAGS = -O2 -I.
+CFLAGS = -mcpu=$(CPU) -O2 -I.
 
 ARCH_DIR = ./arch/$(ARCH)
 BUILD_DIR = ./build/$(ARCH)
