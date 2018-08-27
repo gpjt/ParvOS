@@ -10,10 +10,13 @@ SECTIONS
         *(.text)
     } > ram
 
+    .rodata : { *(.rodata*) } > ram
+
+    .data : { *(.data*) } > ram
+
+    . = ALIGN(16);
     __bss_start = .;
     .bss : { *(.bss*) } > ram
+    . = ALIGN(16);
     __bss_end = .;
-
-    .rodata : { *(.rodata*) } > ram
-    .data : { *(.data*) } > ram
 }
