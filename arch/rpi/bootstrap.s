@@ -2,6 +2,8 @@
 
 .global _start
 _start:
+
+.global reset
 reset:
  	//////////////////////////////////////////////////////////////////////
 	// Disable all cores apart from 0 :
@@ -122,6 +124,7 @@ reset:
 
     bl kernel_main
 
+.global hang
 hang:
     wfe
     b hang

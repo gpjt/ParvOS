@@ -1,33 +1,118 @@
 #include <stdint.h>
 #include <interrupts.h>
+
+#include <mmio.h>
 #include <uart.h>
+#include <util.h>
 
-enum
-{
-    EXCEPTION_TABLE_BASE = 0x00000000,
+extern void install_exception_vector(void);
+extern void enable_irq(void);
 
-    EXC_RESET = (EXCEPTION_TABLE_BASE + 0x0),
-    EXC_UNDEFINED_INSTRUCTION = (EXCEPTION_TABLE_BASE + 0x4),
-    EXC_SOFTWARE_INTERRUPT = (EXCEPTION_TABLE_BASE + 0x8),
-    EXC_PREFETCH_ABORT = (EXCEPTION_TABLE_BASE + 0xC),
-    EXC_DATA_ABORT = (EXCEPTION_TABLE_BASE + 0x10),
-    EXC_RESERVED = (EXCEPTION_TABLE_BASE + 0x14),
-    EXC_IRQ = (EXCEPTION_TABLE_BASE + 0x18),
-    EXC_FIQ = (EXCEPTION_TABLE_BASE + 0x1C),
-};
+// Read the count frequency.  This is annoyingly hard to get
+// documentation for.  The docs at
+// http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0360f/CHDGIJFB.html
+// say that c14 is the "Counter Frequency Register, see the ARM Architecture Reference Manual",
+// but the ARM Architecture Reference Manual is only available for download
+// to registered ARM customers.
+// Anyway, the code below runs the given assembly.  Said assembly says
+// * move from co-processor 15, command zero, to %0, co-processor register
+//   14, opcode 0.
+// Basically, it seems to be reading a value from the co-processor that
+// says what the generic system timer's frequency is.
+uint32_t read_cntfrq(void) {
+    uint32_t val;
+    asm volatile ("mrc p15, 0, %0, c14, c0, 0" : "=r"(val) );
+    return val;
+}
 
+// Another one it's hard to get docs for.   This looks relevant:
+// https://developer.arm.com/docs/ddi0500/e/generic-timer/generic-timer-register-summary/aarch32-generic-timer-register-summary
+// I *think* what we're saying is, "generate an IRQ in val time-units",
+// where there are cntfrq time units per second.
+void write_cntv_tval(uint32_t val) {
+    asm volatile ("mcr p15, 0, %0, c14, c3, 0" :: "r"(val) );
+    return;
+}
 
-void __attribute__ ((interrupt ("IRQ"))) irq_handler(void) {
-    uart_puts("IRQ!\n");
-    while(1);
+// This mirrors the above, so I'm guessing it's querying the
+// timer register we're setting there.  Effectively, "how much
+// longer until my next interrupt?"
+uint32_t read_cntv_tval(void) {
+    uint32_t val;
+    asm volatile ("mrc p15, 0, %0, c14, c3, 0" : "=r"(val) );
+    return val;
+}
+
+// Switch the system timer on -- I assume...
+void enable_cntv(void) {
+    uint32_t cntv_ctl;
+    cntv_ctl = 1;
+    asm volatile ("mcr p15, 0, %0, c14, c3, 1" :: "r"(cntv_ctl) ); // write CNTV_CTL
 }
 
 
-void initialize_exceptions() {
-    *((uint32_t*) EXC_IRQ) = (uint32_t) irq_handler;
+#define CORE0_TIMER_IRQCNTL 0x40000040
+#define CORE0_IRQ_SOURCE 0x40000060
+
+// Route the core0 generic timer to the core 0 IRQ, I think
+// https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2836/QA7_rev3.4.pdf
+void routing_core0cntv_to_core0irq(void) {
+    mmio_write(CORE0_TIMER_IRQCNTL, 0x08);
+}
+
+// Unsure about this one -- something like "is an IRQ pending?"
+uint32_t read_core0timer_pending(void) {
+    uint32_t val;
+    val = mmio_read(CORE0_IRQ_SOURCE);
+    return val;
+}
+
+uint32_t count_frequency;
+
+
+void c_irq_handler(void) {
+    if (read_core0timer_pending() & 0x08) {
+        uart_puts("Timer!\n");
+        // Wake me up in a second
+        write_cntv_tval(count_frequency);
+    }
 }
 
 
 void initialize_interrupts() {
-    initialize_exceptions();
+    install_exception_vector();
+
+    // How many time units are there per second?  We
+    // stash this in a global because we'll need it in our
+    // IRQ handler.
+    count_frequency = read_cntfrq();
+    uart_puts("generic counter frequency is ");
+    char freq_buf[33];
+    itoa(count_frequency, freq_buf);
+    uart_puts(freq_buf);
+    uart_puts("\n");
+
+    // Request an interrupt in count_frequency time units
+    write_cntv_tval(count_frequency);
+
+    // See what it is after it's been set.  Running this shows
+    // that it does go down a bit:
+    // generic counter frequency is 62500000
+    // tval after setting is 62499340
+    // ...which makes sense.
+    uint32_t tval = read_cntv_tval();
+    char tval_buf[33];
+    itoa(tval, tval_buf);
+    uart_puts("tval after setting is ");
+    uart_puts(tval_buf);
+    uart_puts("\n");
+
+    // Route the core0 generic timer to the core 0 IRQ.
+    routing_core0cntv_to_core0irq();
+
+    // Enable the timer
+    enable_cntv();
+
+    // Enable IRQs
+    enable_irq();
 }

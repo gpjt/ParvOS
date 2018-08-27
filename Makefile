@@ -8,10 +8,10 @@ CC = $(TOOLCHAIN_PATH)/arm-none-eabi-gcc
 LD = $(TOOLCHAIN_PATH)/arm-none-eabi-ld
 OBJCOPY = $(TOOLCHAIN_PATH)/arm-none-eabi-objcopy
 
-CFLAGS = -O2 -I.
-
 ARCH_DIR = ./arch/$(ARCH)
 BUILD_DIR = ./build/$(ARCH)
+
+CFLAGS = -O2 -I. -I$(ARCH_DIR)
 
 GENERIC_AS_SRC = $(wildcard *.s)
 GENERIC_AS_OBJ = $(patsubst %.s, $(BUILD_DIR)/%.o, $(GENERIC_AS_SRC))
