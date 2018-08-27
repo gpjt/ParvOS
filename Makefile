@@ -50,5 +50,8 @@ all: $(BUILD_DIR)/kernel.img
 run: $(BUILD_DIR)/kernel.img
 	qemu-system-arm -M raspi2 -m 128 -serial mon:stdio -nographic -kernel $(BUILD_DIR)/kernel.img
 
+test: all
+	cd tests && ./run_tests.sh
+
 clean:
 	rm -rf build

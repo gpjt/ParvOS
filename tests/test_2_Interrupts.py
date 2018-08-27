@@ -13,7 +13,7 @@ class Test_2_Interrupts(unittest.TestCase):
         qemu.expect_exact("interrupt!", timeout=5)
         first_interrupt_time = time.time()
 
-        qemu.expect_exect("interrupt!", timeout=5)
+        qemu.expect_exact("interrupt!", timeout=5)
         second_interrupt_time = time.time()
 
         time_between = second_interrupt_time - first_interrupt_time

@@ -128,3 +128,9 @@ reset:
 hang:
     wfe
     b hang
+
+
+.global io_halt
+io_halt:
+    wfi
+    bx lr

@@ -72,7 +72,7 @@ uint32_t count_frequency;
 
 void c_irq_handler(void) {
     if (read_core0timer_pending() & 0x08) {
-        uart_puts("Timer!\n");
+        uart_puts("interrupt!\n");
         // Wake me up in a second
         write_cntv_tval(count_frequency);
     }
