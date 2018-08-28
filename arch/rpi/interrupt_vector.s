@@ -1,3 +1,6 @@
+    // Useful reference for this stuff: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0471g/BABGCFHB.html
+
+
  	//////////////////////////////////////////////////////////////////////
  	// Function to install the exception vector
  	//////////////////////////////////////////////////////////////////////
@@ -57,7 +60,7 @@ vector:
     ldr pc, swi_handler
     ldr pc, prefetch_handler
     ldr pc, data_handler
-    ldr pc, unused_handler
+    nop
     ldr pc, irq_handler
     ldr pc, fiq_handler
 reset_handler:      .word reset
@@ -65,6 +68,5 @@ undefined_handler:  .word hang
 swi_handler:        .word hang
 prefetch_handler:   .word hang
 data_handler:       .word hang
-unused_handler:     .word hang
 irq_handler:        .word irq
 fiq_handler:        .word hang
