@@ -4,3 +4,4 @@ build/
 *.img
 *.elf
 __pycache__
+*.pyc
