@@ -20,7 +20,7 @@ that (from the directory containing this file) `./toolchain/rpi/bin/arm-none-eab
 We need a cross-compiler as per https://wiki.osdev.org/GCC_Cross-Compiler installed into the
 .gitignored directory `toolchain`, subdirectory `i686`
 
-The following steps worked on my Ubuntu machine:
+The following steps worked on my Arch and Ubuntu machines:
 
     cd toolchain/
     mkdir i686
@@ -32,7 +32,7 @@ The following steps worked on my Ubuntu machine:
     export PATH="$PREFIX/bin:$PATH"
     tar xf binutils-2.31.tar.gz
     mkdir build-binutils
-	cd build-binutils/
+    cd build-binutils/
     ../binutils-2.31/configure --target=$TARGET --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
     make
     make install
