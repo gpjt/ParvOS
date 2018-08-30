@@ -2,7 +2,7 @@
 #define UTIL_H
 #include <stdint.h>
 
-uint32_t strlen(char s[]);
+uint32_t strlen(const char s[]);
 
 void reverse(char s[]);
 

@@ -99,6 +99,9 @@ _start:
        non-maskable interrupt occurring or due to system management mode.
     */
     cli
+.global io_halt
+.type io_halt, @function
+io_halt:
 1:  hlt
     jmp 1b
 

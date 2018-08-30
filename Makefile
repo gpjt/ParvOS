@@ -1,17 +1,24 @@
 .DEFAULT_GOAL := all
 
-ARCH = rpi
+ARCH = i686
 
 TOOLCHAIN_PATH = ./toolchain/$(ARCH)/bin
-AS = $(TOOLCHAIN_PATH)/arm-none-eabi-as
-CC = $(TOOLCHAIN_PATH)/arm-none-eabi-gcc
-LD = $(TOOLCHAIN_PATH)/arm-none-eabi-ld
-OBJCOPY = $(TOOLCHAIN_PATH)/arm-none-eabi-objcopy
+ifeq ($(ARCH), rpi)
+	AS = $(TOOLCHAIN_PATH)/arm-none-eabi-as
+	CC = $(TOOLCHAIN_PATH)/arm-none-eabi-gcc
+	LD = $(TOOLCHAIN_PATH)/arm-none-eabi-ld
+	OBJCOPY = $(TOOLCHAIN_PATH)/arm-none-eabi-objcopy
+else ifeq ($(ARCH), i686)
+	AS = $(TOOLCHAIN_PATH)/i686-elf-as
+	CC = $(TOOLCHAIN_PATH)/i686-elf-gcc
+	LD = $(TOOLCHAIN_PATH)/i686-elf-ld
+	OBJCOPY = $(TOOLCHAIN_PATH)/i686-elf-objcopy
+endif
 
 ARCH_DIR = ./arch/$(ARCH)
 BUILD_DIR = ./build/$(ARCH)
 
-CFLAGS = -O2 -I. -I$(ARCH_DIR)
+CFLAGS = -O2 -ffreestanding -Wall -Wextra -I. -I$(ARCH_DIR)
 
 GENERIC_AS_SRC = $(wildcard *.s)
 GENERIC_AS_OBJ = $(patsubst %.s, $(BUILD_DIR)/%.o, $(GENERIC_AS_SRC))
@@ -40,7 +47,7 @@ $(BUILD_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/kernel.elf: $(GENERIC_AS_OBJ) $(ARCH_AS_OBJ) $(GENERIC_C_OBJ) $(ARCH_C_OBJ) $(ARCH_DIR)/linker.ld
-	$(LD) $(LDFLAGS) -T $(ARCH_DIR)/linker.ld -o $@ $(GENERIC_AS_OBJ) $(ARCH_AS_OBJ) $(GENERIC_C_OBJ) $(ARCH_C_OBJ)
+	$(LD) -T $(ARCH_DIR)/linker.ld -o $@ $(GENERIC_AS_OBJ) $(ARCH_AS_OBJ) $(GENERIC_C_OBJ) $(ARCH_C_OBJ)
 
 $(BUILD_DIR)/kernel.img: $(BUILD_DIR)/kernel.elf
 	$(OBJCOPY) $< -O binary $@

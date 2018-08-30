@@ -1,6 +1,6 @@
 #include <util.h>
 
-uint32_t strlen(char s[]) {
+uint32_t strlen(const char s[]) {
 	uint32_t i;
 	for (i=0; s[i]; i++)
 		;
