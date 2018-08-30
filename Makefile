@@ -8,11 +8,17 @@ ifeq ($(ARCH), rpi)
 	CC = $(TOOLCHAIN_PATH)/arm-none-eabi-gcc
 	LD = $(TOOLCHAIN_PATH)/arm-none-eabi-ld
 	OBJCOPY = $(TOOLCHAIN_PATH)/arm-none-eabi-objcopy
+	QEMU = qemu-system-arm
+	QEMU_FLAGS = -M raspi2 -m 128 -serial mon:stdio -nographic
+	RUN_KERNEL = kernel.img
 else ifeq ($(ARCH), i686)
 	AS = $(TOOLCHAIN_PATH)/i686-elf-as
 	CC = $(TOOLCHAIN_PATH)/i686-elf-gcc
 	LD = $(TOOLCHAIN_PATH)/i686-elf-ld
 	OBJCOPY = $(TOOLCHAIN_PATH)/i686-elf-objcopy
+	QEMU = qemu-system-i386
+	QEMU_FLAGS =
+	RUN_KERNEL = kernel.elf
 endif
 
 ARCH_DIR = ./arch/$(ARCH)
@@ -55,7 +61,7 @@ $(BUILD_DIR)/kernel.img: $(BUILD_DIR)/kernel.elf
 all: $(BUILD_DIR)/kernel.img
 
 run: $(BUILD_DIR)/kernel.img
-	qemu-system-arm -M raspi2 -m 128 -serial mon:stdio -nographic -kernel $(BUILD_DIR)/kernel.img
+	$(QEMU) $(QEMU_FLAGS) -kernel $(BUILD_DIR)/$(RUN_KERNEL)
 
 test: all
 	cd tests && ./run_tests.sh
