@@ -17,7 +17,7 @@ else ifeq ($(ARCH), i686)
 	LD = $(TOOLCHAIN_PATH)/i686-elf-ld
 	OBJCOPY = $(TOOLCHAIN_PATH)/i686-elf-objcopy
 	QEMU = qemu-system-i386
-	QEMU_FLAGS =
+	QEMU_FLAGS = -serial mon:stdio -nographic
 	RUN_KERNEL = kernel.elf
 endif
 
