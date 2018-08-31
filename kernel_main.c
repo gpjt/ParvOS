@@ -1,16 +1,16 @@
-#include <uart.h>
+#include <serial.h>
 #include <interrupts.h>
 
 extern void io_halt(void);
 
 
 void kernel_main(void) {
-    uart_init();
-    uart_puts("Booting ParvOS\n");
+    serial_init();
+    serial_puts("Booting ParvOS\n");
 
-    uart_puts("Initializing interrupts... ");
+    serial_puts("Initializing interrupts... ");
     initialize_interrupts();
-    uart_puts("done!\n");
+    serial_puts("done!\n");
 
     io_halt();
 }

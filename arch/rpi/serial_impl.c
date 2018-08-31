@@ -2,6 +2,7 @@
 #include <stdint.h>
 
 #include <mmio.h>
+#include <serial.h>
 
 
 // Loop <delay> times in a way that the compiler won't optimize away
@@ -48,7 +49,7 @@ enum
     UART0_TDR    = (UART0_BASE + 0x8C),
 };
 
-void uart_init()
+void serial_init()
 {
     // Disable UART0.
     mmio_write(UART0_CR, 0x00000000);
@@ -89,22 +90,18 @@ void uart_init()
     mmio_write(UART0_CR, (1 << 0) | (1 << 8) | (1 << 9));
 }
 
-void uart_putc(unsigned char c)
+void serial_putc(unsigned char c)
 {
     // Wait for UART to become ready to transmit.
-    while ( mmio_read(UART0_FR) & (1 << 5) ) { }
+    while ( mmio_read(UART0_FR) & (1 << 5) )
+        ;
     mmio_write(UART0_DR, c);
 }
 
-unsigned char uart_getc()
+unsigned char serial_getc()
 {
     // Wait for UART to have received something.
-    while ( mmio_read(UART0_FR) & (1 << 4) ) { }
+    while ( mmio_read(UART0_FR) & (1 << 4) )
+        ;
     return mmio_read(UART0_DR);
-}
-
-void uart_puts(const char* str)
-{
-    for (size_t i = 0; str[i] != '\0'; i ++)
-        uart_putc((unsigned char)str[i]);
 }

@@ -2,7 +2,7 @@
 #include <interrupts.h>
 
 #include <mmio.h>
-#include <uart.h>
+#include <serial.h>
 #include <util.h>
 
 extern void install_exception_vector(void);
@@ -72,7 +72,7 @@ uint32_t count_frequency;
 
 void c_irq_handler(void) {
     if (read_core0timer_pending() & 0x08) {
-        uart_puts("interrupt!\n");
+        serial_puts("interrupt!\n");
         // Wake me up in a second
         write_cntv_tval(count_frequency);
     }
@@ -86,11 +86,11 @@ void initialize_interrupts() {
     // stash this in a global because we'll need it in our
     // IRQ handler.
     count_frequency = read_cntfrq();
-    uart_puts("generic counter frequency is ");
+    serial_puts("generic counter frequency is ");
     char freq_buf[33];
     itoa(count_frequency, freq_buf);
-    uart_puts(freq_buf);
-    uart_puts("\n");
+    serial_puts(freq_buf);
+    serial_puts("\n");
 
     // Request an interrupt in count_frequency time units
     write_cntv_tval(count_frequency);
@@ -103,9 +103,9 @@ void initialize_interrupts() {
     uint32_t tval = read_cntv_tval();
     char tval_buf[33];
     itoa(tval, tval_buf);
-    uart_puts("tval after setting is ");
-    uart_puts(tval_buf);
-    uart_puts("\n");
+    serial_puts("tval after setting is ");
+    serial_puts(tval_buf);
+    serial_puts("\n");
 
     // Route the core0 generic timer to the core 0 IRQ.
     routing_core0cntv_to_core0irq();
