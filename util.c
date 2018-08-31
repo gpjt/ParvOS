@@ -1,13 +1,15 @@
 #include <util.h>
 
-uint32_t strlen(const char s[]) {
+uint32_t strlen(const char s[])
+{
 	uint32_t i;
-	for (i=0; s[i]; i++)
-		;
+	for (i=0; s[i]; i++) {
+	}
 	return i;
 }
 
-void reverse(char s[]) {
+void reverse(char s[])
+{
 	char c;
 	for (int i=0, j = strlen(s) - 1; i < j; i++, j--) {
 		c  = s[i];
@@ -16,7 +18,8 @@ void reverse(char s[]) {
 	}
 }
 
-void itoa(int n, char s[]) {
+void itoa(int n, char s[])
+{
 	int sign = n;
 	if ((sign = n) < 0) {
 		n = -n;

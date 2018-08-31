@@ -49,7 +49,7 @@ enum
     UART0_TDR    = (UART0_BASE + 0x8C),
 };
 
-void serial_init()
+void serial_init(void)
 {
     // Disable UART0.
     mmio_write(UART0_CR, 0x00000000);
@@ -93,15 +93,15 @@ void serial_init()
 void serial_putc(unsigned char c)
 {
     // Wait for UART to become ready to transmit.
-    while ( mmio_read(UART0_FR) & (1 << 5) )
-        ;
+    while (mmio_read(UART0_FR) & (1 << 5)) {
+    }
     mmio_write(UART0_DR, c);
 }
 
-unsigned char serial_getc()
+unsigned char serial_getc(void)
 {
     // Wait for UART to have received something.
-    while ( mmio_read(UART0_FR) & (1 << 4) )
-        ;
+    while (mmio_read(UART0_FR) & (1 << 4)) {
+    }
     return mmio_read(UART0_DR);
 }

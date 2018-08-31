@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := all
 
-ARCH = rpi
+ARCH = i686
 
 TOOLCHAIN_PATH = ./toolchain/$(ARCH)/bin
 ifeq ($(ARCH), rpi)

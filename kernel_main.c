@@ -4,7 +4,8 @@
 extern void io_halt(void);
 
 
-void kernel_main(void) {
+void kernel_main(void)
+{
     serial_init();
     serial_puts("Booting ParvOS\n");
 

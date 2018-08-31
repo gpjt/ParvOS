@@ -19,7 +19,8 @@ extern void enable_irq(void);
 //   14, opcode 0.
 // Basically, it seems to be reading a value from the co-processor that
 // says what the generic system timer's frequency is.
-uint32_t read_cntfrq(void) {
+uint32_t read_cntfrq(void)
+{
     uint32_t val;
     asm volatile ("mrc p15, 0, %0, c14, c0, 0" : "=r"(val) );
     return val;
@@ -29,7 +30,8 @@ uint32_t read_cntfrq(void) {
 // https://developer.arm.com/docs/ddi0500/e/generic-timer/generic-timer-register-summary/aarch32-generic-timer-register-summary
 // I *think* what we're saying is, "generate an IRQ in val time-units",
 // where there are cntfrq time units per second.
-void write_cntv_tval(uint32_t val) {
+void write_cntv_tval(uint32_t val)
+{
     asm volatile ("mcr p15, 0, %0, c14, c3, 0" :: "r"(val) );
     return;
 }
@@ -37,14 +39,16 @@ void write_cntv_tval(uint32_t val) {
 // This mirrors the above, so I'm guessing it's querying the
 // timer register we're setting there.  Effectively, "how much
 // longer until my next interrupt?"
-uint32_t read_cntv_tval(void) {
+uint32_t read_cntv_tval(void)
+{
     uint32_t val;
     asm volatile ("mrc p15, 0, %0, c14, c3, 0" : "=r"(val) );
     return val;
 }
 
 // Switch the system timer on -- I assume...
-void enable_cntv(void) {
+void enable_cntv(void)
+{
     uint32_t cntv_ctl;
     cntv_ctl = 1;
     asm volatile ("mcr p15, 0, %0, c14, c3, 1" :: "r"(cntv_ctl) ); // write CNTV_CTL
@@ -56,12 +60,14 @@ void enable_cntv(void) {
 
 // Route the core0 generic timer to the core 0 IRQ, I think
 // https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2836/QA7_rev3.4.pdf
-void routing_core0cntv_to_core0irq(void) {
+void routing_core0cntv_to_core0irq(void)
+{
     mmio_write(CORE0_TIMER_IRQCNTL, 0x08);
 }
 
 // Unsure about this one -- something like "is an IRQ pending?"
-uint32_t read_core0timer_pending(void) {
+uint32_t read_core0timer_pending(void)
+{
     uint32_t val;
     val = mmio_read(CORE0_IRQ_SOURCE);
     return val;
@@ -70,7 +76,8 @@ uint32_t read_core0timer_pending(void) {
 uint32_t count_frequency;
 
 
-void c_irq_handler(void) {
+void c_irq_handler(void)
+{
     if (read_core0timer_pending() & 0x08) {
         serial_puts("interrupt!\n");
         // Wake me up in a second
@@ -79,7 +86,8 @@ void c_irq_handler(void) {
 }
 
 
-void initialize_interrupts() {
+void initialize_interrupts(void)
+{
     install_exception_vector();
 
     // How many time units are there per second?  We
