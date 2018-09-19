@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := all
 
-ARCH = i686
+ARCH = rpi
 
 TOOLCHAIN_PATH = ./toolchain/$(ARCH)/bin
 ifeq ($(ARCH), rpi)
@@ -64,7 +64,7 @@ run: $(BUILD_DIR)/kernel.img
 	$(QEMU) $(QEMU_FLAGS) -kernel $(BUILD_DIR)/$(RUN_KERNEL)
 
 test: all
-	cd tests && ./run_tests.sh
+	cd tests && ./run_tests.py $(ARCH)
 
 clean:
 	rm -rf build
